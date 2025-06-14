@@ -68,14 +68,14 @@ public class RoadNetworkTest {
 
     @Test
     public void testRoadNetworkIterator() {
-        RoadNetwork net = new RoadNetwork(1);
+        RoadNetwork net = new RoadNetwork(2);
         Set<Location> iterated = new HashSet<>();
         for (Location loc : net) {
             iterated.add(loc);
         }
 
         // Im Stern mit k=1 gibt es genau 19 Städte
-        assertEquals(19, iterated.size());
+        assertEquals(37, iterated.size());
 
         // Zentrum ist immer dabei
         assertTrue(iterated.contains(new Location(0, 0)));

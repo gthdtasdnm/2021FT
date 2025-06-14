@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 public class RoadNetwork implements Iterable<Location>{
@@ -23,15 +24,14 @@ public class RoadNetwork implements Iterable<Location>{
         int y = loc.getY();
         int z = loc.getZ();
 
-        // x + y + z muss 0 sein (wird durch Konstruktor garantiert)
-        int absX = Math.abs(x);
-        int absY = Math.abs(y);
-        int absZ = Math.abs(z);
+        int countInRange = 0;
+        if (Math.abs(x) <= k) countInRange++;
+        if (Math.abs(y) <= k) countInRange++;
+        if (Math.abs(z) <= k) countInRange++;
 
-        // Gültig ist: jede Koordinate liegt im Bereich [-k, k]
-        // UND die Summe der absoluten Koordinaten ist <= 2 * k
-        return absX <= k && absY <= k && absZ <= k && (absX + absY + absZ) <= 2 * k;
+        return countInRange >= 2;
     }
+
 
 
 
@@ -63,17 +63,35 @@ public class RoadNetwork implements Iterable<Location>{
 
     @Override
     public Iterator<Location> iterator() {
-        List<Location> allLocations = new ArrayList<>();
-        for (int x = -k; x <= k; x++) {
-            for (int y = -k; y <= k; y++) {
-                Location loc = new Location(x, y); // z wird intern berechnet
-                if (contains(loc)) {
-                    allLocations.add(loc);
+        return new RoadNetworkIterator();
+    }
+
+    private class RoadNetworkIterator implements Iterator<Location> {
+
+        private List<Location> allLocations = new ArrayList<>();
+
+        public RoadNetworkIterator(){
+            for(int i = -2 * k; i <= 2 * k; i++){
+                for(int j = -2 * k; j <= 2 * k; j++){
+                    if(contains(new Location(i,j))) {
+                        allLocations.add(new Location(i, j));
+                    }
+
                 }
             }
         }
-        return allLocations.iterator();
-    }
 
+        @Override
+        public boolean hasNext() {
+            return !allLocations.isEmpty();
+        }
+
+        @Override
+        public Location next() {
+            Location res = allLocations.getFirst();
+            allLocations.removeFirst();
+            return res;
+        }
+    }
 
 }
